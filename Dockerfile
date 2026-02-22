@@ -1,0 +1,25 @@
+# Этап сборки
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+
+# Копируем go.mod и go.sum если есть
+COPY . .
+
+# Скачиваем зависимости и собираем приложение
+RUN go mod download || true
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o tracker .
+
+# Финальный образ
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Копируем собранное приложение из builder
+COPY --from=builder /app/tracker .
+
+EXPOSE 8080
+
+CMD ["./tracker"]
