@@ -8,7 +8,7 @@ COPY . .
 
 # Скачиваем зависимости и собираем приложение
 RUN go mod download || true
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o tracker .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o tracker .
 
 # Финальный образ
 FROM alpine:latest
